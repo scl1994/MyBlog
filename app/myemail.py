@@ -1,15 +1,20 @@
-from email.mime.text import MIMEText
-# from email.header import Header
-import smtplib
+from threading import Thread
+from flask import current_app, render_template
+from flask_mail import Message
+from . import mail
 
 
-def send_email(message, from_addr, password, to_addr, smtp_server):
-    msg = MIMEText("New user:" + message, "plain", "utf-8")
-    # msg["From"] = Header(app.config['MAIL_USERNAME'], "utf-8")
-    # msg["To"] = Header(app.config['FLASKY_SENDER'], "utf-8")
-    # msg["Subject"] = Header(app.config['FLASKY_MAIL_SUBJECT_PREFIX'], "utf-8")
-    server = smtplib.SMTP_SSL(smtp_server, 465)
-    server.set_debuglevel(1)
-    server.login(from_addr, password)
-    server.sendmail(from_addr, to_addr, msg.as_string())
-    server.quit()
+def send_async_email(app, msg):
+    with app.app_context():
+        mail.send(msg)
+
+
+def send_email(to, subject, template, **kwargs):
+    app = current_app._get_current_object()
+    msg = Message(app.config['FLASKY_MAIL_SUBJECT_PREFIX'] + ' ' + subject,
+                  sender=app.config['FLASKY_MAIL_SENDER'], recipients=[to])
+    msg.body = render_template(template + '.txt', **kwargs)
+    msg.html = render_template(template + '.html', **kwargs)
+    thr = Thread(target=send_async_email, args=[app, msg])
+    thr.start()
+    return thr
