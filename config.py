@@ -14,7 +14,7 @@ class Config:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_ADMIN = os.environ.get("FLASKY_ADMIN")
-    FLASKY_SENDER = "Flasky Admin<%s>" % FLASKY_ADMIN
+    FLASKY_MAIL_SENDER = "Flasky Admin<%s>" % FLASKY_ADMIN
 
     @staticmethod
     def init_app(app):
