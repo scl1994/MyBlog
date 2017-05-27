@@ -37,9 +37,6 @@ class User(UserMixin, db.Model):
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return '<User %r>' % self.username
-
     def generate_confirmation_token(self, expiration=3600):
         s = Serializer(current_app.config["SECRET_KEY"], expiration)
         return s.dumps({"confirm": self.id})
@@ -55,6 +52,25 @@ class User(UserMixin, db.Model):
         self.confirmed = True
         db.session.add(self)
         return True
+
+    def generate_reset_token(self, expiration=3600):
+        s = Serializer(current_app.config["SECRET_KEY"], expiration)
+        return s.dumps({"reset": self.id})
+
+    def reset_password(self, token, new_password):
+        s = Serializer(current_app.config["SECRET_KEY"])
+        try:
+            data = s.loads(token)
+        except:
+            return False
+        if data.get("reset") != self.id:
+            return False
+        self.password = new_password
+        db.session.add(self)
+        return True
+
+    def __repr__(self):
+        return '<User %r>' % self.username
 
 
 @login_manager.user_loader
