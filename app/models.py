@@ -4,6 +4,7 @@ from flask_login import UserMixin, AnonymousUserMixin
 from . import login_manager
 from itsdangerous import TimedJSONWebSignatureSerializer as Serializer
 from flask import current_app
+from datetime import datetime
 
 
 class Permission:
@@ -53,14 +54,6 @@ class Role(db.Model):
 
 
 class User(UserMixin, db.Model):
-    def __init__(self, **kwargs):
-        super(User, self).__init__(**kwargs)
-        if self.role is None:
-            if self.email is current_app.config["FLASKY_ADMIN"]:
-                self.role = Role.query.filter_by(permissions=0xff).first()
-            if self.role is None:
-                self.role = Role.query.filter_by(default=True).first()
-
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -68,6 +61,21 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
+
+    # 用户详细信息
+    name = db.Column(db.String(64))
+    location = db.Column(db.String(64))
+    about_me = db.Column(db.Text())
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+
+    def __init__(self, **kwargs):
+        super(User, self).__init__(**kwargs)
+        if self.role is None:
+            if self.email is current_app.config["FLASKY_ADMIN"]:
+                self.role = Role.query.filter_by(permissions=0xff).first()
+            if self.role is None:
+                self.role = Role.query.filter_by(default=True).first()
 
     # 角色验证
     def can(self, permissions):
@@ -121,6 +129,11 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+    # 刷新用户最后的访问时间
+    def ping(self):
+        self.last_seen = datetime.utcnow()
+        db.session.add(self)
 
 
 class AnonymousUser(AnonymousUserMixin):
