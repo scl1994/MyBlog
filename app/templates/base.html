@@ -1,5 +1,11 @@
 {% extends 'bootstrap/base.html' %} <!--这里是集成bootstrap的base模板-->
 
+<!--引入moment.js库-->
+{% block scripts %}
+{{ super() }}
+{{ moment.include_moment() }}
+{% endblock %}
+
 {% block titile %}Flasky{% endblock %}
 
 {% block head %}
