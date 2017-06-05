@@ -63,13 +63,14 @@ class User(UserMixin, db.Model):
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
     password_hash = db.Column(db.String(128))
     confirmed = db.Column(db.Boolean, default=False)
-
     # 用户详细信息
     name = db.Column(db.String(64))
     location = db.Column(db.String(64))
     about_me = db.Column(db.Text())
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 用户头像的md5散列值
+    avatar_hash = db.Column(db.String(32))
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -78,6 +79,9 @@ class User(UserMixin, db.Model):
                 self.role = Role.query.filter_by(permissions=0xff).first()
             if self.role is None:
                 self.role = Role.query.filter_by(default=True).first()
+        # 生成唯一的头像md5散列值
+        if self.email is not None and self.avatar_hash is None:
+            self.avatar_hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
 
     # 角色验证
     def can(self, permissions):
@@ -135,7 +139,8 @@ class User(UserMixin, db.Model):
             url = "http://secure.gravatar.com/avatar"
         else:
             url = 'http://www.gravatar.com/avatar'
-        hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
+        # 使用已存储的散列值或者生成一个
+        hash = self.avatar_hash or hashlib.md5(self.email.encode("utf-8")).hexdigest()
         return '{url}/{hash}?s={size}&d={default}&r={rating}'.format(
             url=url, hash=hash, size=size, default=default, rating=rating)
 
