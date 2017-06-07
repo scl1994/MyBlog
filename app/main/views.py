@@ -3,22 +3,23 @@ from flask import render_template, session, redirect, url_for, abort, flash
 from flask_login import current_user, login_required
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
 from .. import db
-from ..models import User, Role
+from ..models import User, Role, Post, Permission
 from ..decorators import admin_required
 
 
 @main.route("/", methods=["GET", "POST"])
 def index():
-    form = NameForm()
-    if form.validate_on_submit():
-        # ...
-        return redirect(url_for("index"))
-    return render_template("index.html",
-                           form=form, name=session.get("name"),
-                           known=session.get("known", False),
-                           current_time=datetime.utcnow())
+    # 在首页显示博客文章
+    form = PostForm()
+    if current_user.can(Permission.WRITE_ARTICLES) and \
+        form.validate_on_submit():
+        post = Post(body=form.body.data, author=current_user._get_current_object())
+        db.session.add(post)
+        return redirect(url_for(".index"))
+    posts = Post.query.order_by(Post.timestamp.desc()).all()
+    return render_template("index.html", form=form, posts=posts)
 
 
 @main.route("/user/<username>")
@@ -73,3 +74,5 @@ def edit_profile_admin(id):
     form.location.data = user.location
     form.about_me.data = user.about_me
     return render_template("edit_profile.html", form=form, user=user)
+
+
