@@ -5,7 +5,6 @@
     min-height: 260px;
     margin-left: 280px;
 }
-
 ul.posts {
     list-style-type: none;
     padding: 0px;
@@ -31,4 +30,10 @@ div.post-thumbnail {
 div.post-content {
     margin-left: 48px;
     min-height: 48px;
+}
+div.pagination {
+    width: 100%;
+    text-align: right;
+    padding: 0px;
+    margin : 0px;
 }

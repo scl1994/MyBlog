@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}Flasky{% endblock %}
+{% import "_macros.html" as macros %}
 
 {% block page_content %}
     <img class="img-rounded profile-thumbnail" src="{{ user.gravatar(size=256) }}" >
@@ -46,4 +47,10 @@
     <!--在资料页面显示博客文章-->
     <h3>Posts by {{ user.username }}</h3>
     {% include "_posts.html" %}
+    <!--博客文章分页显示-->
+    {% if pagination %}
+        <div class="pagination">
+            {{ macros.pagination_widget(pagination, ".index") }}
+        </div>
+    {% endif %}
 {% endblock %}
