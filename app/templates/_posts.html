@@ -25,6 +25,12 @@
                         {{ post.body }}
                     {% endif %}
                 </div>
+                <!--显示文章的对应url链接-->
+                <div class="post-footer">
+                    <a href="{{ url_for('.post', id=post.id) }}">
+                        <span class="label label-default">Permalink</span>
+                    </a>
+                </div>
             </div>
         </li>
     {% endfor %}
