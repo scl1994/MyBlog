@@ -14,7 +14,7 @@ def index():
     # 在首页显示博客文章
     form = PostForm()
     if current_user.can(Permission.WRITE_ARTICLES) and \
-        form.validate_on_submit():
+            form.validate_on_submit():
         post = Post(body=form.body.data, author=current_user._get_current_object())
         db.session.add(post)
         return redirect(url_for(".index"))
@@ -83,7 +83,26 @@ def edit_profile_admin(id):
     return render_template("edit_profile.html", form=form, user=user)
 
 
+# 对应每篇文章的页面
 @main.route("/post/<int:id>")
 def post(id):
     post = Post.query.get_or_404(id)
     return render_template('post.html', posts=[post])
+
+
+# 编辑每篇文章的页面
+@main.route('/edit/<int:id>', methods=["GET", "POST"])
+@login_required
+def edit(id):
+    post = Post.query.get_or_404(id)
+    if current_user != post.author and \
+            not current_user.can(Permission.ADMINISTER):
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.body = form.body.data
+        db.session.add(post)
+        flash('The post has been update.')
+        return redirect(url_for('.post', id=post.id))
+    form.body.date = post.body
+    return render_template("edit_post.html", form=form)
