@@ -57,6 +57,14 @@ class Role(db.Model):
         db.session.commit()
 
 
+# 定义用户关注(多对多关系)
+class Follow(db.Model):
+    __tablename__ = 'follows'
+    follower_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    followed_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -75,6 +83,14 @@ class User(UserMixin, db.Model):
     avatar_hash = db.Column(db.String(32))
     # 链接文章
     posts = db.relationship("Post", backref="author", lazy="dynamic")
+    # 被谁关注
+    followed = db.relationship("Follow", foreign_keys=[Follow.follower_id],
+                               backref=db.backref('follower', lazy='joined'), lazy='dynamic',
+                               cascade='all, delete-orphan')
+    # 关注了谁
+    followers = db.relationship("Follow", foreign_keys=[Follow.followed_id],
+                                backref=db.backref('followed', lazy='joined'), lazy='dynamic',
+                                cascade='all, delete-orphan')
 
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
@@ -204,6 +220,23 @@ class User(UserMixin, db.Model):
             except IntegrityError:
                 db.session.rollback()
 
+    # 关注关系辅助方法
+    def follow(self, user):
+        if not self.is_following(user):
+            f = Follow(follower=self, followed=user)
+            db.session.add(f)
+
+    def unfollow(self, user):
+        f = self.followed.filter_by(followed_id=user.id).first()
+        if f:
+            db.session.delete(f)
+
+    def is_following(self, user):
+        return self.followed.filter_by(followed_id=user.id).first() is not None
+
+    def is_followed_by(self, user):
+        return self.followers.filter_by(follower_id=user.id).first() is not None
+
 
 # 博客文章
 class Post(db.Model):
@@ -238,6 +271,8 @@ class Post(db.Model):
                         'i', 'li', 'ol', 'pre', 'strong', 'ul', 'h1', 'h2', 'h3', 'p']
         target.body_html = bleach.linkify(bleach.clean(markdown(value, output_format='html'),
                                                        tags=allowed_tags, strip=True))
+
+
 # 监听body是否有改变，改变了就立即更新
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
@@ -248,6 +283,7 @@ class AnonymousUser(AnonymousUserMixin):
 
     def is_administrator(self):
         return False
+
 
 login_manager.anonymous_user = AnonymousUser
 
