@@ -43,6 +43,34 @@
             </a>
         {% endif %}
     </p>
+    <!--文章计数-->
+    <p>
+        {{ user.posts.count() }} blog posts
+    </p>
+    <!--关注与取消关注-->
+    <p>
+        {% if current_user.can(Permission.FOLLOW) and user != current_user %}
+            {% if not current_user.is_following(user) %}
+                <a href="{{ url_for('.follow', username=user.username) }}" class="btn btn-primary">
+                    Follow
+                </a>
+            {% else %}
+                <a href="{{ url_for('.unfollow', username=user.username) }}" class="btn btn-default">
+                    Unfollow
+                </a>
+            {% endif %}
+        {% endif %}
+        <a href="{{ url_for('.followers', username=user.username) }}">
+            Follower: <span class="badge">{{ user.followers.count() }}</span>
+        </a>
+        <a href="{{ url_for('.followed_by', username=user.username) }}">
+            Following: <span class="badge">{{ user.followed.count() }}</span>
+        </a>
+        {% if current_user.is_authenticated and user != current_user and
+             user.is_following(current_user) %}
+          |  <span class="label label-default">Follows you</span>
+        {% endif %}
+    </p>
 	</div>
     <!--在资料页面显示博客文章-->
     <h3>Posts by {{ user.username }}</h3>
