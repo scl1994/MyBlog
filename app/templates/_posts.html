@@ -17,8 +17,13 @@
                         {{ post.author.username }}
                     </a>
                 </div>
+                <!--根据内容渲染出博客文章-->
                 <div class="post-body">
-                    {{ post.body }}
+                    {% if post.body_html %}
+                        {{ post.body_html | safe }}
+                    {% else %}
+                        {{ post.body }}
+                    {% endif %}
                 </div>
             </div>
         </li>
