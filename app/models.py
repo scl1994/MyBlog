@@ -237,6 +237,12 @@ class User(UserMixin, db.Model):
     def is_followed_by(self, user):
         return self.followers.filter_by(follower_id=user.id).first() is not None
 
+    # 获取关注用户的文章(联结操作)
+    @property
+    def followed_posts(self):
+        return Post.query.join(Follow, Follow.followed_id == Post.author_id)\
+            .filter(Follow.follower_id == self.id)
+
 
 # 博客文章
 class Post(db.Model):
