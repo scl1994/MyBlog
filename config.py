@@ -19,6 +19,7 @@ class Config:
     FLASKY_POSTS_PER_PAGE = 20
     # 每页显示的关注着的数量
     FLASKY_FOLLOWERS_PER_PAGE = 50
+    FLASKY_COMMENTS_PER_PAGE = 10
 
     @staticmethod
     def init_app(app):

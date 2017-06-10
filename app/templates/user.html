@@ -43,10 +43,8 @@
             </a>
         {% endif %}
     </p>
-    <!--文章计数-->
-    <p>
-        {{ user.posts.count() }} blog posts
-    </p>
+    <!--文章计数与评论计数-->
+    <p>{{ user.posts.count() }} blog posts. {{ user.comments.count() }} comments.</p>
     <!--关注与取消关注-->
     <p>
         {% if current_user.can(Permission.FOLLOW) and user != current_user %}

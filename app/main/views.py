@@ -4,9 +4,9 @@ from flask import render_template, session, redirect, url_for, abort \
 from flask_login import current_user, login_required
 
 from . import main
-from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm
+from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
 from .. import db
-from ..models import User, Role, Post, Permission
+from ..models import User, Role, Post, Permission, Comment
 from ..decorators import admin_required, permission_required
 
 
@@ -94,10 +94,26 @@ def edit_profile_admin(id):
 
 
 # 对应每篇文章的页面
-@main.route("/post/<int:id>")
+@main.route("/post/<int:id>", methods=["GET", "POST"])
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('post.html', posts=[post])
+    form = CommentForm()
+    if form.validate_on_submit():
+        comment = Comment(body=form.body.data,
+                          post=post,
+                          author=current_user._get_current_object())
+        db.session.add(comment)
+        flash('Your comment has been published.')
+        return redirect(url_for('.post', id=post.id, page=-1))
+    page = request.args.get('page', 1, type=int)
+    if page == -1:
+        page = (post.comments.count() - 1) // \
+               current_app.config['FLASKY_COMMENTS_PER_PAGE'] + 1
+    pagination = post.comments.order_by(Comment.timestamp.asc()).paginate(
+            page, per_page=current_app.config['FLASKY_COMMENTS_PER_PAGE'], error_out=False)
+    comments = pagination.items
+    return render_template('post.html', posts=[post], form=form,
+                           comments=comments, pagination=pagination)
 
 
 # 编辑每篇文章的页面
@@ -186,7 +202,7 @@ def followed_by(username):
 @login_required
 def show_all():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie("show_followed", "", max_age=30*24*60*60)
+    resp.set_cookie("show_followed", "", max_age=30 * 24 * 60 * 60)
     return resp
 
 
@@ -195,6 +211,5 @@ def show_all():
 @login_required
 def show_followed():
     resp = make_response(redirect(url_for('.index')))
-    resp.set_cookie('show_followed', '1', max_age=30*24*60*60)
+    resp.set_cookie('show_followed', '1', max_age=30 * 24 * 60 * 60)
     return resp
-
