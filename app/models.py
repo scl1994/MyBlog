@@ -92,6 +92,15 @@ class User(UserMixin, db.Model):
                                 backref=db.backref('followed', lazy='joined'), lazy='dynamic',
                                 cascade='all, delete-orphan')
 
+    # 如果用户没有关注自己，添加关注自己
+    @staticmethod
+    def add_self_follows():
+        for user in User.query.all():
+            if not user.is_following(user):
+                user.follow(user)
+                db.session.add(user)
+                db.session.commit()
+
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -102,6 +111,8 @@ class User(UserMixin, db.Model):
         # 生成唯一的头像md5散列值
         if self.email is not None and self.avatar_hash is None:
             self.avatar_hash = hashlib.md5(self.email.encode("utf-8")).hexdigest()
+        # 新建用户关注自己
+        self.followed.append(Follow(followed=self))
 
     # 角色验证
     def can(self, permissions):
