@@ -22,8 +22,10 @@ login_manager.login_view = "auth.login"
 def create_app(config_name):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
+    # 这里的init_app和下面的不同，这是自己在config.py中定义的静态方法
     config[config_name].init_app(app)
 
+    # 下面的init_app是flask拓展中定义的方法，用来为是实例绑定app
     bootstrap.init_app(app)
     moment.init_app(app)
     db.init_app(app)

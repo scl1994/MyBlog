@@ -4,6 +4,7 @@ from flask_login import current_user
 from .models import Permission
 
 
+# 用做装饰器，检查当前用户是否具备某些角色身份（角色以参数传入装饰器）
 def permission_required(permission):
     def decorator(f):
         @wraps(f)
@@ -15,5 +16,6 @@ def permission_required(permission):
     return decorator
 
 
+# 检测是否具备管理员的身份
 def admin_required(f):
     return permission_required(Permission.ADMINISTER)(f)

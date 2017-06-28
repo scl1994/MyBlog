@@ -12,15 +12,15 @@ import bleach
 
 
 class Permission:
-    # 关注其他用户
+    # 关注其他用户00000001（对应位置上为1表示拥有该权限，为0表示不具备该权限）
     FOLLOW = 0x01
-    # 在其他人撰写的文章下发布评论
+    # 在其他人撰写的文章下发布评论00000010
     COMMENT = 0x02
-    # 写原创文章
+    # 写原创文章00000100
     WRITE_ARTICLES = 0x04
-    # 处理他人不当的评论
+    # 处理他人不当的评论00001000
     MODERATE_COMMENTS = 0x08
-    # 管理网站
+    # 管理网站11111111
     ADMINISTER = 0x80
 
 
@@ -29,14 +29,17 @@ class Role(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), unique=True)
     default = db.Column(db.Boolean, default=False, index=True)
+    # 由于记录用户权限的位运算数
     permissions = db.Column(db.Integer)
     users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
         return "<Role %r>" % self.name
 
+    # 将预设的用户角色插入到数据库中（每个角色都是某几个权限的组合）
     @staticmethod
     def insert_roles():
+        # 预设了三个角色，普通用户、内容协管员、管理员
         roles = {
             "User": (Permission.FOLLOW |
                      Permission.COMMENT |
@@ -103,6 +106,7 @@ class User(UserMixin, db.Model):
                 db.session.add(user)
                 db.session.commit()
 
+    # 初始化用户角色（若该用户的email与配置参数的管理员的值相同，赋予其管理员权限）
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if self.role is None:
@@ -116,10 +120,11 @@ class User(UserMixin, db.Model):
         # 新建用户关注自己
         self.followed.append(Follow(followed=self))
 
-    # 角色验证
+    # 角色验证，用用户的permission和所需要的值位运算，只有当用户的权限高于所需值的时候返回True
     def can(self, permissions):
         return self.role is not None and (self.role.permissions & permissions) == permissions
 
+    # 验证用户是否具有管理员权限（比较常用，因此将它提取出来）
     def is_administrator(self):
         return self.can(Permission.ADMINISTER)
 
@@ -298,6 +303,7 @@ class Post(db.Model):
 db.event.listen(Post.body, 'set', Post.on_changed_body)
 
 
+# 匿名用户类（不用检查是否登陆即可调can等方法）
 class AnonymousUser(AnonymousUserMixin):
     def can(self, permissions):
         return False

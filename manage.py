@@ -26,5 +26,20 @@ def test():
     unittest.TextTestRunner(verbosity=2).run(tests)
 
 
+@manager.command
+def deploy():
+    from flask_migrate import upgrade
+    from app.models import Role, User
+
+    # 数据库迁移
+    upgrade()
+
+    # 创建用户角色
+    Role.insert_roles()
+
+    # 让用户关注自己
+    User.add_self_follows()
+
+
 if __name__ == "__main__":
     manager.run()
