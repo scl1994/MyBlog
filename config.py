@@ -7,18 +7,26 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY") or "hard to guess string"
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    # 邮件服务器
     MAIL_SERVER = "smtp.qq.com"
+    # 邮件发送端口号
     MAIL_PORT = 465
+    # 是否使用SSL加密
     MAIL_USE_SSL = True
+    # 邮件发送账号
     MAIL_USERNAME = os.environ.get("MAIL_USERNAME")
+    # 邮件登录密码
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD")
+    # 邮件主题
     FLASKY_MAIL_SUBJECT_PREFIX = '[Flasky]'
     FLASKY_ADMIN = os.environ.get("FLASKY_ADMIN")
+    # 邮件发送人信息
     FLASKY_MAIL_SENDER = "Flasky Admin<%s>" % FLASKY_ADMIN
     # 每页显示的博客文章的数量
     FLASKY_POSTS_PER_PAGE = 20
     # 每页显示的关注着的数量
     FLASKY_FOLLOWERS_PER_PAGE = 50
+    # 每页评论数量
     FLASKY_COMMENTS_PER_PAGE = 10
 
     @staticmethod
@@ -26,21 +34,24 @@ class Config:
         pass
 
 
+# 开发数据库链接
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "mysql+pymysql://root:123456@localhost/myblog_dev"
+        "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
 
 
+# 测试数据库链接
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "mysql+pymysql://root:123456@localhost/myblog_test"
+        "sqlite:///" + os.path.join(basedir, "data-test.sqlite")
 
 
+# 生产数据库链接
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "mysql+pymysql://root:123456@localhost/myblog"
+        "sqlite:///" + os.path.join(basedir, "data.sqlite")
 
 
 config = {
@@ -48,5 +59,6 @@ config = {
     "testing": TestingConfig,
     "production": ProductionConfig,
 
+    # 默认开发数据库
     "default": DevelopmentConfig
 }
