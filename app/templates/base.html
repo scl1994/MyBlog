@@ -13,6 +13,7 @@
 	<link rel="shortcut icon" href="{{url_for('static',filename='favicon.ico')}}" type="image/x-icon">
 	<link rel="icon" href="{{url_for('static',filename='favicon.ico')}}" type="image/x-icon">
     <link rel="stylesheet"  href="{{ url_for('static', filename='css/styles.css') }}" type="text/css">
+    <link rel="stylesheet"  href="{{ url_for('static', filename='css/navStyles.css') }}" type="text/css">
 {% endblock %}
 
 {% block navbar %}
@@ -25,39 +26,61 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{{ url_for('main.index') }}">Flasky</a>
+			<a class="navbar-brand" href="{{ url_for('main.index') }}">草榴社区分部</a>
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
-				<li><a href="{{ url_for('main.index') }}">Home</a></li>
+				<li id="nav-bar-home">
+                    <a href="{{ url_for('main.index') }}">
+                        <span class="glyphicon glyphicon-home" id="nav-home-pic"></span> 主页
+                    </a>
+                </li>
                 {% if current_user.is_authenticated %}
                     <li>
                         <a href="{{ url_for("main.user", username=current_user.username) }}">
-                            Profile
+                            <span class="glyphicon glyphicon-user"></span> 个人信息
                         </a>
                     </li>
                 {% endif %}
 			</ul>
             <ul class="nav navbar-right">
-                <!--加入管理评论-->
-                {% if current_user.can(Permission.MODERATE_COMMENTS) %}
-                    <li><a href="{{ url_for('main.moderate') }}">Moderate Comments</a></li>
-                {% endif %}
                 {% if current_user.is_authenticated %}
-                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                 <li class="dropdown" id="accountNav-button">
+                    <a href="#" id="accountNav-link" class="dropdown-toggle" data-toggle="dropdown">
                         <img src="{{ current_user.gravatar(size=18) }}">
-                        Account <b class="caret"></b></a>
+                        账户 <b class="caret"></b></a>
                     <ul class="dropdown-menu">
-                        <li><a href="{{ url_for('auth.change_password') }}">Change Password</a></li>
-                        <li><a href="{{ url_for("auth.change_email_request") }}">Change Email</a></li>
-                        <li><a href="{{ url_for('auth.logout') }}">Log Out</a></li>
+                        <li>
+                            <a href="{{ url_for('auth.change_password') }}">
+                                <span class="glyphicon glyphicon-edit"></span> 修改密码
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for("auth.change_email_request") }}">
+                                <span class="glyphicon glyphicon-edit"></span> 更换邮箱
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ url_for('auth.logout') }}">
+                                <span class="glyphicon glyphicon-log-out"></span> 注销
+                            </a>
+                        </li>
                     </ul>
                 </li>
                 {% else %}
                 <li>
-                    <a href="{{ url_for('auth.login') }}">Log In</a>
+                    <a href="{{ url_for('auth.login') }}">
+                        <span class="glyphicon glyphicon-log-in"></span> 登录
+                    </a>
                 </li>
+                {% endif %}
+                <!--加入管理评论-->
+                {% if current_user.can(Permission.MODERATE_COMMENTS) %}
+                    <li id="moderateNav-button">
+                        <a href="{{ url_for('main.moderate') }}">
+                            <span class="glyphicon glyphicon-eye-open"></span> 管理评论
+                        </a>
+                    </li>
                 {% endif %}
             </ul>
 		</div>

@@ -7,15 +7,15 @@
     {{ pagedown.include_pagedown() }}
 {% endblock %}
 
-{% block title %}Flasky{% endblock %}
+{% block title %}草榴社区分部{% endblock %}
 
 {% block page_content %}
     <div class="page-header">
-        <h1>Hello,
+        <h1>你好，
             {% if current_user.is_authenticated %}
                 {{ current_user.username }}
             {% else %}
-                Stranger
+                游客
             {% endif %}
         </h1>
     </div>

@@ -1,0 +1,12 @@
+#moderateNav-button {
+    float: right;
+}
+#moderateNav-button a{
+    padding: 15px;
+}
+#accountNav-button {
+    float: right;
+}
+#accountNav-link {
+    padding: 15px;
+}

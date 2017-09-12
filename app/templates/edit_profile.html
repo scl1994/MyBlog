@@ -4,10 +4,27 @@
 {% block page_content %}
     <div class="page-header">
         <h1>
-            Edit Your Profile
+            <span class="glyphicon glyphicon-edit"></span> 修改个人信息
         </h1>
     </div>
     <div class="col-md-4">
-        {{wtf.quick_form(form)}}
+        <form method="POST" role="form">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                {{ form.name.label("姓名：") }}
+                {{ form.name(class="form-control",type="text",placeholder="请输入真实姓名") }}
+            </div>
+            <div class="form-group">
+                {{ form.location.label("户籍：") }}
+                {{ form.location(class="form-control",type="text",placeholder="请输入户籍所在地") }}
+            </div>
+            <div class="form-group">
+                {{ form.about_me.label("自我简介：") }}
+                {{ form.about_me(class="form-control",type="text",placeholder="简单的介绍一下你自己吧") }}
+            </div>
+            <div>
+                {{ form.submit() }}
+            </div>
+        </form>
     </div>
 {% endblock %}

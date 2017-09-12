@@ -38,20 +38,20 @@ class Config:
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "sqlite:///" + os.path.join(basedir, "data-dev.sqlite")
+        r"postgresql://postgres:123456@localhost/blog-dev"
 
 
 # 测试数据库链接
 class TestingConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "sqlite:///" + os.path.join(basedir, "data-test.sqlite")
+        r"postgresql://postgres:python@123@localhost/blog-test"
 
 
 # 生产数据库链接
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = os.environ.get("DEV_DATABASE_URL") or \
-        "sqlite:///" + os.path.join(basedir, "data.sqlite")
+        r"postgresql://postgres:python@123@localhost/blog-product"
 
 
 config = {

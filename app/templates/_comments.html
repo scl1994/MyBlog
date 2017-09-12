@@ -14,7 +14,7 @@
                 <!--针对不同权限的人显示不同的评论-->
                 {% if comment.disable %}
                     <p style="color: red">
-                        <i>This comment has been disabled by a moderator.</i>
+                        <i>该评论已经被管理员屏蔽显示</i>
                     </p>
                 {% endif %}
                 {% if moderate or not comment.disable %}
@@ -29,10 +29,10 @@
                 <br />
                 {% if comment.disable %}
                     <a class="btn btn-default btn-xs" href="{{ url_for('.moderate_enable',
-                            id=comment.id, page=page) }}">Enable</a>
+                            id=comment.id, page=page) }}">显示</a>
                 {% else %}
                     <a class="btn btn-danger brn-xs" href="{{ url_for('.moderate_disable',
-                            id=comment.id, page=page) }}">Disable</a>
+                            id=comment.id, page=page) }}">禁止显示</a>
                 {% endif %}
             {% endif %}
         </div>
