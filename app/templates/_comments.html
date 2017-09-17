@@ -14,7 +14,7 @@
                 <!--针对不同权限的人显示不同的评论-->
                 {% if comment.disable %}
                     <p style="color: red">
-                        <i>该评论已经被管理员屏蔽显示</i>
+                        <b>该评论已经被管理员屏蔽显示</b>
                     </p>
                 {% endif %}
                 {% if moderate or not comment.disable %}

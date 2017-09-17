@@ -26,7 +26,7 @@
 				<span class="icon-bar"></span>
 				<span class="icon-bar"></span>
 			</button>
-			<a class="navbar-brand" href="{{ url_for('main.index') }}">草榴社区分部</a>
+			<a class="navbar-brand" href="{{ url_for('main.index') }}">天行健</a>
 		</div>
 		<div class="navbar-collapse collapse">
 			<ul class="nav navbar-nav">
@@ -68,8 +68,8 @@
                     </ul>
                 </li>
                 {% else %}
-                <li>
-                    <a href="{{ url_for('auth.login') }}">
+                <li id="loginNav-button">
+                    <a href="{{ url_for('auth.login') }}" id="loginNav-link">
                         <span class="glyphicon glyphicon-log-in"></span> 登录
                     </a>
                 </li>

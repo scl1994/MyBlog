@@ -1,0 +1,51 @@
+div.profile-header {
+    border:1px solid #ffddf7;
+    background-color: #a9fff6;
+    margin-bottom: 5px;
+}
+.profile-thumbnail {
+    position: absolute;
+    margin: 5px;
+}
+.profile-personInf {
+    min-height: 260px;
+    margin-left: 280px;
+}
+
+div.profile-myPost {
+    border:1px solid #ffddf7;
+    background-color: #a9fff6;
+    float: left;
+    width: 80%;
+}
+div.pagination {
+    width: 100%;
+    text-align: right;
+    padding: 0px;
+    margin : 0px;
+}
+div.information-statistics {
+    border:1px solid #ffddf7;
+    background-color: #a9fff6;
+    float: right;
+    width: 19%;
+    padding: 0px;
+    margin: 0px;
+}
+.followInf {
+    border-bottom:1px solid #ffddf7;
+    margin-bottom: 3px;
+}
+.linkBtn.follow {
+    padding: 5px;
+    text-decoration: none;
+    display: inline-block;
+    width: 49%;
+    text-align: center;
+}
+div.otherInf {
+    margin-top: 3px;
+}
+td.countNumber {
+    text-align: right;
+}

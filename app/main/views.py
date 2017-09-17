@@ -2,6 +2,7 @@ from datetime import datetime
 from flask import render_template, session, redirect, url_for, abort \
     , flash, request, current_app, make_response
 from flask_login import current_user, login_required
+import os
 
 from . import main
 from .forms import NameForm, EditProfileForm, EditProfileAdminForm, PostForm, CommentForm
@@ -247,3 +248,29 @@ def moderate_disable(id):
     comment.disable = True
     db.session.add(comment)
     return redirect(url_for('.moderate', page=request.args.get('page', 1, type=int)))
+
+
+# 上传用户自定义头像
+@main.route('/upload_file', methods=['GET', 'POST'])
+@login_required
+def upload_file():
+    if request.method == 'POST':
+        file = request.files['file']
+        file_path = os.path.join(current_app.config["UPLOAD_FOLDER"], str(current_user.id))
+        if not os.path.exists(file_path):
+            os.mkdir(file_path)
+        relative_path = os.path.join(str(current_user.id), file.filename)
+        file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], relative_path))
+        current_user.use_avatar = False
+        current_user.photo_url = relative_path
+        return '<p>success</p>'
+    return render_template("upload.html", user=current_user)
+
+
+# main.add_url_rule("/upload/<path:filename>", endpoint="upload", view_func=main.send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
+
+"""
+@main.route("/upload/<path:filename>", methods=['GET', 'POST'])
+def upload(filename):
+    return current_app.send_from_directory(current_app.config["UPLOAD_FOLDER"], filename)
+"""

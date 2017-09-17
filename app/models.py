@@ -68,6 +68,7 @@ class Follow(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)
 
 
+# 用户模型
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -84,6 +85,10 @@ class User(UserMixin, db.Model):
     last_seen = db.Column(db.DateTime(), default=datetime.utcnow)
     # 用户头像的md5散列值
     avatar_hash = db.Column(db.String(32))
+    # 是否使用默认头像
+    use_avatar = db.Column(db.Boolean, default=True)
+    # 自定义头像地址
+    photo_url = db.Column(db.String())
     # 链接文章
     posts = db.relationship("Post", backref="author", lazy="dynamic")
     # 被谁关注
@@ -338,5 +343,7 @@ class Comment(db.Model):
         target.body_html = bleach.linkify(bleach.clean(
             markdown(value, output_format='html'),
             tags=allowed_tags, strip=True))
+
+
 db.event.listen(Comment.body, 'set', Comment.on_changed_body)
 

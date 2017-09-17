@@ -2,6 +2,7 @@
   <dictionary name="scl">
     <words>
       <w>myblog</w>
+      <w>postgresql</w>
       <w>pymysql</w>
     </words>
   </dictionary>

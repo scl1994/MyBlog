@@ -6,6 +6,7 @@ from .forms import LoginForm, RegistrationForm, ChangePasswordForm,\
     PasswordResetRequestForm, PasswordResetForm, ChangeEmailForm
 from ..myemail import send_email
 from flask_login import current_user
+import hashlib
 
 
 @auth.route("/login", methods=["GET", "POST"])
@@ -35,6 +36,7 @@ def register():
         user = User(email=form.email.data, username=form.username.data, password=form.password.data)
         db.session.add(user)
         db.session.commit()
+        user.avatar_hash = hashlib.md5(form.email.data.encode("utf-8")).hexdigest()
         token = user.generate_confirmation_token()
         send_email(user.email, "Confirm Your Account", "auth/email/confirm", user=user, token=token)
         flash("A confirmation email has been sent to you by email.")
@@ -48,9 +50,9 @@ def confirm(token):
     if current_user.confirmed:
         return redirect(url_for("main.index"))
     if current_user.confirm(token):
-        flash("You have confirmed your account. Thanks!")
+        flash("您已验证您的账号！")
     else:
-        flash("The confirmation link is invalid or has expired.")
+        flash("验证链接错误或失效！")
     return redirect(url_for("main.index"))
 
 

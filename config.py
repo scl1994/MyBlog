@@ -28,6 +28,8 @@ class Config:
     FLASKY_FOLLOWERS_PER_PAGE = 50
     # 每页评论数量
     FLASKY_COMMENTS_PER_PAGE = 10
+    # 上传文件存储地址
+    UPLOAD_FOLDER = r'E:\Git\MyBlog\app\upload'
 
     @staticmethod
     def init_app(app):
